@@ -191,6 +191,9 @@
 #pragma mark - Toolbar
 
 - (void)updateToolbarItems {
+    if (self.hideToolbar) {
+        return;
+    }
     self.backBarButtonItem.enabled = self.webView.canGoBack;
     self.forwardBarButtonItem.enabled = self.webView.canGoForward;
     

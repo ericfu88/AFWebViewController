@@ -93,4 +93,9 @@
  */
 @property (nonatomic, strong) UIColor *toolbarTintColor;
 
+/**
+ * Hide the toolbar
+ */
+@property BOOL hideToolbar;
+
 @end
