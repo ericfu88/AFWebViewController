@@ -12,7 +12,9 @@
 
 @import WebKit;
 
-@interface AFWebViewController () <WKNavigationDelegate>
+@interface AFWebViewController () <WKNavigationDelegate> {
+    BOOL _savedToolbarState;
+}
 
 // Bar buttons
 @property (nonatomic, strong) UIBarButtonItem *backBarButtonItem, *forwardBarButtonItem, *refreshBarButtonItem, *stopBarButtonItem, *actionBarButtonItem;
@@ -85,8 +87,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    if (!self.toolbarTintColor) {
-        self.toolbarTintColor = self.navigationController.navigationBar.tintColor;
+    if (! self.hideToolbar) {
+        if (!self.toolbarTintColor) {
+            self.toolbarTintColor = self.navigationController.navigationBar.tintColor;
+        }
     }
     
     [self updateToolbarItems];
@@ -98,20 +102,26 @@
     
     [super viewWillAppear:animated];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [self.navigationController setToolbarHidden:NO animated:animated];
-    }
-    else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.navigationController setToolbarHidden:YES animated:animated];
+    // save state of toolbar
+    _savedToolbarState = self.navigationController.toolbarHidden;
+    
+    if (! self.hideToolbar) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            [self.navigationController setToolbarHidden:NO animated:animated];
+        }
+        else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.navigationController setToolbarHidden:YES animated:animated];
+        }
+    } else {
+        [self.navigationController setToolbarHidden:YES animated:NO];
     }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [self.navigationController setToolbarHidden:YES animated:animated];
-    }
+    // restore previous state of toolbar
+    [self.navigationController setToolbarHidden:_savedToolbarState animated:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
